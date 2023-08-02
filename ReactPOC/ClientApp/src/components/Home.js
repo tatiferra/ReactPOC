@@ -1,25 +1,82 @@
 import React, { Component } from 'react';
+import TemporaryDrawer from './TemporaryDrawer';
+import Badgess from './myBadge'
+import { Card, CardContent, CardActions, Button, Typography, Grid, Breadcrumbs } from '@mui/material';
+import { Link } from 'react-router-dom';
+import Breadcrumb from './Breadcrumb';
 
 export class Home extends Component {
   static displayName = Home.name;
+  
+    constructor(props) {
+        super(props);
+        this.state = {
+            badgeContent: 133,
+        }   
+
+        this.events = [
+            { date: new Date(2023, 6, 10), title: 'Evento 1' },
+            { date: new Date(2023, 6, 15), title: 'Evento 2' },
+            // Agrega más eventos aquí
+        ];
+    }
 
   render() {
     return (
-      <div>
-        <h1>Hello, world!</h1>
-        <p>Welcome to your new single-page application, built with:</p>
-        <ul>
-          <li><a href='https://get.asp.net/'>ASP.NET Core</a> and <a href='https://msdn.microsoft.com/en-us/library/67ef8sbd.aspx'>C#</a> for cross-platform server-side code</li>
-          <li><a href='https://facebook.github.io/react/'>React</a> for client-side code</li>
-          <li><a href='http://getbootstrap.com/'>Bootstrap</a> for layout and styling</li>
-        </ul>
-        <p>To help you get started, we have also set up:</p>
-        <ul>
-          <li><strong>Client-side navigation</strong>. For example, click <em>Counter</em> then <em>Back</em> to return here.</li>
-          <li><strong>Development server integration</strong>. In development mode, the development server from <code>create-react-app</code> runs in the background automatically, so your client-side resources are dynamically built on demand and the page refreshes when you modify any file.</li>
-          <li><strong>Efficient production builds</strong>. In production mode, development-time features are disabled, and your <code>dotnet publish</code> configuration produces minified, efficiently bundled JavaScript files.</li>
-        </ul>
-        <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
+        <div>
+            
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6" component="h2">
+                                    Administrador de Eventos
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Gestiona los eventos que se realizan en la SSR
+                                </Typography>
+                            </CardContent>
+                            <CardActions>
+                                <Button component={Link} to="/eventoslist" size="small" variant="outlined">Lista</Button>
+                                <Button component={Link} to="/eventoscard" size="small" variant="outlined">Fichas</Button>
+                                <Button component={Link} to="/eventoscalendar" size="small" variant="outlined">Calendario</Button>
+                            </CardActions>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6" component="h2">
+                                    Administrador de Expositores
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Gestiona los expositores autorizados en SSR
+                                </Typography>
+                            </CardContent>
+                            <CardActions>
+                                <Button component={Link} to="/expositoreslist" size="small" variant="outlined">Lista</Button>
+                            </CardActions>
+                        </Card>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="h6" component="h2">
+                                    Reportes de Ingresos por Eventos
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Emite consultas de ingreso de los Eventos
+                                </Typography>
+                            </CardContent>
+                            <CardActions>
+                                <Button component={Link} to="/ingresoslist" size="small" variant="outlined">Lista</Button>
+                            </CardActions>
+                        </Card>
+                    </Grid>
+                </Grid>    
+            </div>
+
       </div>
     );
   }

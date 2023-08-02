@@ -1,101 +1,102 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { Paper, Typography, TextField, Button } from '@mui/material';
-/*import { withStyles } from '@mui/system';*/
+import { Paper, Typography, TextField, Button, Snackbar, Alert, CircularProgress } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // Importamos useNavigate
+import { useAuth } from './AuthProvider';
 
-const styles = (theme) => ({
-    root: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-    },
-    paper: {
-        padding: theme.spacing(2),
-        width: 300,
-    },
-    form: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: theme.spacing(2),
-    },
-});
+function Login() {
+    const { setIsAuthenticated, updateUserData } = useAuth();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-class Login extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            username: '',
-            password: '',
-        };
-    }
+    const navigate = useNavigate(); // Usamos useNavigate para acceder a la función navigate
 
-    handleUsernameChange = (event) => {
-        this.setState({ username: event.target.value });
+    const handleUsernameChange = (event) => {
+        setUsername(event.target.value);
     };
 
-    handlePasswordChange = (event) => {
-        this.setState({ password: event.target.value });
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value);
     };
 
-    handleSubmit = (event) => {
+    const showSnackbar = (severity, message) => {
+        setIsSnackbarOpen(true);
+        setSnackbarSeverity(severity);
+        setSnackbarMessage(message);
+    };
+
+    const hideSnackbar = () => {
+        setIsSnackbarOpen(false);
+    };
+
+    const handleSubmit = (event) => {
         event.preventDefault();
-        // Aquí puedes implementar la lógica de autenticación o enviar los datos al servidor
+        setIsLoading(true); // Activar indicador de carga
 
-        // Crear un objeto con los datos del formulario
         const formData = {
-            username: this.state.username,
-            password: this.state.password
+            username: username,
+            password: password,
         };
 
-        // Enviar la solicitud al controlador
-        const response = fetch('Login');
+        axios
+            .post('login/login', formData)
+            .then((response) => {
+                // Actualizar los datos del usuario utilizando updateUserData del AuthProvider
+                const userData = {
+                    ...response.data.user,
+                    role: response.data.role, // Agregar el rol del usuario al objeto userData
+                };
+                updateUserData(userData);
 
-        axios.post('/Login', formData)
-            .then(response => {
-                // Manejar la respuesta del controlador
-                console.log(response.data);
+                // Actualizar el estado de isAuthenticated a true
+                setIsAuthenticated(true);
+
+                showSnackbar('success', 'Inicio de sesion exitoso');
+
+                setTimeout(() => {
+                    // Utiliza navigate para navegar a la página principal sin recargar la página
+                    setIsLoading(false); // Desactivar indicador de carga
+                    navigate('/');
+                }, 2000);
             })
-            .catch(error => {
-                // Manejar los errores de la solicitud
+            .catch((error) => {
+                showSnackbar('error', error.response.data.message);
                 console.error(error);
+                setIsLoading(false); // Desactivar indicador de carga
             });
-        console.log('Username:', this.state.username);
-        console.log('Password:', this.state.password);
     };
 
-    render() {
-        const { classes } = this.props;
 
-        return (
-            <div  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100 + 'vh' }} >
-                <Paper style={{padding:10,width : 300}} >
-                    <Typography variant="h5" component="h1" align="center" gutterBottom>
-                        Login
-                    </Typography>
-                    <form onSubmit={this.handleSubmit}
-                        style={{ display: 'flex',flexDirection: 'column',gap: 8}}>
-                        <TextField
-                            label="Username"
-                            value={this.state.username}
-                            onChange={this.handleUsernameChange}
-                            required
-                        />
-                        <TextField
-                            label="Password"
-                            type="password"
-                            value={this.state.password}
-                            onChange={this.handlePasswordChange}
-                            required
-                        />
-                        <Button type="submit" variant="contained" color="primary">
-                            Login
-                        </Button>
-                    </form>
-                </Paper>
-            </div>
-        );
-    }
+    return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '64vh' }}>
+            <Paper style={{ padding: 10, width: 300 }}>
+                <Typography variant="h5" component="h1" align="center" gutterBottom>
+                    Ingreso al Sistema
+                </Typography>
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <TextField label="Usuario" value={username} onChange={handleUsernameChange} required />
+                    <TextField label="Password" type="password" value={password} onChange={handlePasswordChange} required />
+                    <Button type="submit" variant="contained" color="primary" disabled={isLoading}>
+                        {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Ingresar'}
+                    </Button>
+                </form>
+            </Paper>
+            <Snackbar
+                open={isSnackbarOpen}
+                autoHideDuration={2000}
+                onClose={hideSnackbar}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert severity={snackbarSeverity} onClose={hideSnackbar}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+        </div>
+    );
 }
 
-export default (Login);
+export default Login;

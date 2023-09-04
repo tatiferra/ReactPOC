@@ -11,7 +11,7 @@ export class Layout extends Component {
         <div>
         {/*<NavMenu />*/}
         <Home1 />
-        <Container>
+            <Container maxWidth="sm">
           {this.props.children}
         </Container>
       </div>

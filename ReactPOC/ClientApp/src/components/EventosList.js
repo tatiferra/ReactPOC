@@ -31,10 +31,13 @@ class EventosList extends Component {
             selectedRow: null,
             isEditing: false, // True es un evento nuevo y False es Edición de un evento existente;
             showSnackbar: false,
+            snackbarMessage: '',
+            snackbarSeverity: 'success',
             error: '',
             tiposIngreso: [],
             tipoIngreso: '',
             confirmDisable: false,
+            confirmDelete: false,
         };
     }
 
@@ -52,9 +55,18 @@ class EventosList extends Component {
         this.setState({ confirmDisable: true });
     };
 
-    handleShowSnackbar = () => {
-        this.setState({ showSnackbar: true });
+    handleConfirmDelete = () => {
+        this.setState({ confirmDelete: true });
     };
+
+    handleShowSnackbar = (message, severity) => {
+        this.setState({
+            showSnackbar: true,
+            snackbarMessage: message,
+            snackbarSeverity: severity || 'success', // Si no se proporciona un tipo de alerta, se usa 'success' por defecto
+        });
+    };
+    
 
     handleEdit = (selectedRow) => {
         console.log('Editar evento:', selectedRow);
@@ -98,13 +110,25 @@ class EventosList extends Component {
 
     };
 
-    handleDelete = (userId) => {
-        console.log('Eliminar evento:', userId);
+    handleDelete = (selectedRow) => {
+        console.log('Eliminar evento:', selectedRow);
         // Lógica para eliminar el usuario con el ID proporcionado
-        alert('Eliminar el evento ' + userId);
-    };
+        const formattedFechaDesde = this.formatDate(selectedRow.fechaDesde);
+        const formattedFechaHasta = this.formatDate(selectedRow.fechaHasta);
+        this.setState({
+            selectedRow: selectedRow,
+            nombreEvento: selectedRow.nombreEvento,
+            fechaDesde: formattedFechaDesde,
+            fechaHasta: formattedFechaHasta,
+            organizador: selectedRow.organizador,
+            habilitado: selectedRow.habilitado,
+            tipoIngreso: selectedRow.id_tipoIngreso,
+        });
+        this.handleConfirmDelete();
+        //this.handleDisableEvent();
 
-    
+
+    };
 
     handleOpenModal = () => {
         const today = new Date().toISOString().split('T')[0];
@@ -134,7 +158,7 @@ class EventosList extends Component {
     renderCell = (params) => {
         const { row } = params;
         const handleEdit = () => this.handleEdit(row);
-        const handleDelete = () => this.handleDelete(row.id);
+        const handleDelete = () => this.handleDelete(row);
         const handleDisable = () => this.handleDisable(row);
 
         return (
@@ -219,13 +243,14 @@ class EventosList extends Component {
                 console.log('Evento agregado con éxito:', response.data);
                 // Volver a obtener los eventos activos para actualizar la grilla
                 this.ObtenerEventosActivos();
-                this.handleShowSnackbar(); // Mostrar el Snackbar
+                this.handleShowSnackbar('Evento Agregado con exito', 'success'); // Mostrar el Snackbar
                 // Cerrar el diálogo modal y limpiar los campos
                 this.handleCloseModal();
             })
             .catch((error) => {
                 // Maneja el error si ocurre
                 console.error('Error al agregar el evento:', error);
+                this.handleShowSnackbar('Error al agregar el evento', 'error');
                 // Cerrar el diálogo modal y limpiar los campos
                 this.handleCloseModal();
             });
@@ -261,10 +286,10 @@ class EventosList extends Component {
             })
             .then((response) => {
                 // Procesa la respuesta si es necesario
-                console.log('Evento agregado con éxito:', response.data);
+                console.log('Evento modificado con éxito:', response.data);
                 // Volver a obtener los eventos activos para actualizar la grilla
                 this.ObtenerEventosActivos();
-                this.handleShowSnackbar(); // Mostrar el Snackbar
+                this.handleShowSnackbar('Evento modificado con exito', 'success'); // Mostrar el Snackbar
                 // Cerrar el diálogo modal y limpiar los campos
                 this.handleCloseModal();
             })
@@ -272,6 +297,7 @@ class EventosList extends Component {
                 // Maneja el error si ocurre
                 console.error('Error al agregar el evento:', error);
                 // Cerrar el diálogo modal y limpiar los campos
+                this.handleShowSnackbar('Error al modificar el evento', 'error');
                 this.handleCloseModal();
             });
 
@@ -298,7 +324,7 @@ class EventosList extends Component {
                 console.log('Evento cambio estado con éxito:', response.data);
                 // Volver a obtener los eventos activos para actualizar la grilla
                 this.ObtenerEventosActivos();
-                this.handleShowSnackbar(); // Mostrar el Snackbar
+                this.handleShowSnackbar('Cambio de estado realizado con exito', 'success'); // Mostrar el Snackbar
                 // Cerrar el diálogo modal y limpiar los campos
                 this.setState({ confirmDisable: false });
             })
@@ -306,7 +332,41 @@ class EventosList extends Component {
                 // Maneja el error si ocurre
                 console.error('Error al cambiar estado el evento:', error);
                 // Cerrar el diálogo modal y limpiar los campos
+                this.handleShowSnackbar('No se pudo realizar el cambio de estado', 'error');
                 this.setState({ confirmDisable: false });
+            });
+    };
+
+    handleDeleteEvent = () => {
+
+        const { nombreEvento, fechaDesde, fechaHasta, organizador, habilitado, tipoIngreso, selectedRow } = this.state;
+
+        // Resto de la lógica para agregar el evento
+        axios
+            .post('eventos/EliminarEvento', {
+                id: selectedRow.id,
+                nombreEvento: nombreEvento,
+                fechaDesde: fechaDesde,
+                fechaHasta: fechaHasta,
+                organizador: organizador,
+                habilitado: habilitado ? false : true,
+                id_tipoIngreso: tipoIngreso,
+            })
+            .then((response) => {
+                // Procesa la respuesta si es necesario
+                console.log('Evento eliminado con éxito:', response.data);
+                // Volver a obtener los eventos activos para actualizar la grilla
+                this.ObtenerEventosActivos();
+                this.handleShowSnackbar('Evento eliminado con exito', 'success'); // Mostrar el Snackbar
+                // Cerrar el diálogo modal y limpiar los campos
+                this.setState({ confirmDelete: false });
+            })
+            .catch((error) => {
+                // Maneja el error si ocurre
+                console.error('Error al eliminar el evento:', error);
+                // Cerrar el diálogo modal y limpiar los campos
+                this.handleShowSnackbar('No se puede eliminar el evento', 'error');
+                this.setState({ confirmDelete: false });
             });
     };
 
@@ -362,7 +422,7 @@ class EventosList extends Component {
         //    return null; 
         //}
 
-        const { error, rows, loading, openModal, nombreEvento, fechaDesde, fechaHasta, organizador, habilitado, isEditing, showSnackbar, tiposIngreso, tipoIngreso, confirmDisable } = this.state;
+        const { error, rows, loading, openModal, nombreEvento, fechaDesde, fechaHasta, organizador, habilitado, isEditing, showSnackbar, snackbarSeverity, snackbarMessage, tiposIngreso, tipoIngreso, confirmDisable, confirmDelete } = this.state;
         const columns = [
             { field: 'nombreEvento', headerName: 'Evento', width: 180 },
             { field: 'fechaDesde', headerName: 'Fecha Inicio', type: 'datetime', width: 130, valueFormatter: (params) => this.formatDateTime(params.value), },
@@ -506,13 +566,29 @@ class EventosList extends Component {
                         </Button>
                     </DialogActions>
                 </Dialog>
+                <Dialog open={confirmDelete} onClose={() => this.setState({ confirmDelete: false })}>
+                    <DialogTitle>Confirmar Accion</DialogTitle>
+                    <DialogContent>
+                        <Typography>
+                            Estas seguro de que deseas eliminar el evento?
+                        </Typography>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => this.setState({ confirmDelete: false })}>
+                            Cancelar
+                        </Button>
+                        <Button onClick={this.handleDeleteEvent} variant="contained" color="primary">
+                            Eliminar
+                        </Button>
+                    </DialogActions>
+                </Dialog>
                 <Snackbar
                     open={showSnackbar}
                     autoHideDuration={3000}
                     onClose={() => this.setState({ showSnackbar: false })}
                 >
-                    <Alert severity="success" sx={{ width: '100%' }}>
-                        Evento modificado satisfactoriamente
+                    <Alert severity={snackbarSeverity} sx={{ width: '100%' }}>
+                        {snackbarMessage}
                     </Alert>
                 </Snackbar>
             </div>

@@ -439,9 +439,9 @@ class EventosCard extends Component {
                                     <Button size="small" onClick={() => this.handleDisable(row)}>
                                         Cambiar Estado
                                     </Button>
-                                    <Button size="small" onClick={() => this.handleDelete(row.id)}>
-                                        Eliminar
-                                    </Button>
+                                    {/*<Button size="small" onClick={() => this.handleDelete(row.id)}>*/}
+                                    {/*    Eliminar*/}
+                                    {/*</Button>*/}
                                 </Stack>
                             </CardActions>
                         </Card>

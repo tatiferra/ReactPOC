@@ -28,8 +28,10 @@ public partial class WebRuralContext : DbContext
     public virtual DbSet<Usuarios> Usuarios { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=.\\sqlexpress;Initial Catalog=WebRural;Integrated Security=True;persist security info=True;user id=sa;password=Golf2027;MultipleActiveResultSets=True;TrustServerCertificate=True");
+        //Desarrollo
+        //=> optionsBuilder.UseSqlServer("Data Source=.\\sqlexpress;Initial Catalog=WebRural;Integrated Security=True;persist security info=True;user id=sa;password=Golf2027;MultipleActiveResultSets=True;TrustServerCertificate=True");
+        //Produccion
+        => optionsBuilder.UseSqlServer("Data Source=SQL5054.site4now.net;Initial Catalog=db_a9d070_ssr;User Id=db_a9d070_ssr_admin;Password=Golf$3013");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

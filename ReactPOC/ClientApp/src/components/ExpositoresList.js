@@ -334,12 +334,12 @@ class ExpositoresList extends Component {
 
     ObtenerEventosActivos = () => {
         axios
-            .get('eventos/obtenereventosactivos')
+            .get('eventos/obtenereventoshabilitados')
             .then((response) => {
                 this.setState({ eventosActivos: response.data });
             })
             .catch((error) => {
-                console.error('Error obteniendo eventos activos', error);
+                console.error('Error obteniendo eventos habilitados', error);
             });
     };
 
@@ -417,7 +417,7 @@ class ExpositoresList extends Component {
                     </Button>                    
                     <TextField
                         select
-                        label="Filtrar por Evento"
+                        label="Filtrar Evento Habilitado"
                         value={eventoFiltrado}
                         onChange={(e) => this.setState({ eventoFiltrado: e.target.value })}
                         sx={{ width: 200 }}

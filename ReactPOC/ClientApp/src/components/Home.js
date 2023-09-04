@@ -25,10 +25,18 @@ export class Home extends Component {
     return (
         <div>
             
-            <div style={{ display: 'flex', justifyContent: 'center', marginTop: 20 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', marginTop: 20 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <img
+                    src="/images/logorural.png"
+                    alt="Logo"
+                    style={{ width: 359, height: 205 }}
+                    />
+                </div>
+                <div style={{ marginTop: 20 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6} md={4}>
-                        <Card>
+                        <Card variant="outlined">
                             <CardContent>
                                 <Typography variant="h6" component="h2">
                                     Administrador de Eventos
@@ -45,7 +53,7 @@ export class Home extends Component {
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={6} md={4}>
-                        <Card>
+                        <Card variant="outlined">
                             <CardContent>
                                 <Typography variant="h6" component="h2">
                                     Administrador de Expositores
@@ -56,11 +64,12 @@ export class Home extends Component {
                             </CardContent>
                             <CardActions>
                                 <Button component={Link} to="/expositoreslist" size="small" variant="outlined">Lista</Button>
+                                <Button component={Link} to="/expositoresregistro" size="small" variant="outlined">Registro</Button>
                             </CardActions>
                         </Card>
                     </Grid>
                     <Grid item xs={12} sm={6} md={4}>
-                        <Card>
+                        <Card variant="outlined">
                             <CardContent>
                                 <Typography variant="h6" component="h2">
                                     Reportes de Ingresos por Eventos
@@ -74,7 +83,8 @@ export class Home extends Component {
                             </CardActions>
                         </Card>
                     </Grid>
-                </Grid>    
+                </Grid>
+                </div>
             </div>
 
       </div>

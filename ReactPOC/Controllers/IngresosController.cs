@@ -30,7 +30,7 @@ namespace ReactPOC.Controllers
         }
 
         [HttpPost]
-        public IActionResult ValidarIngreso([FromBody] String dni)
+        public IActionResult ValidarIngreso([FromBody] IngresoRequest request)
         {
 
             JsonSerializerOptions options = new JsonSerializerOptions
@@ -41,16 +41,16 @@ namespace ReactPOC.Controllers
             // Validar que exista un Expositor con ese DNI
             if (ModelState.IsValid)
             {
-                Expositores? expositor = db.Expositores.FirstOrDefault(e => e.DNI == dni);
+                Expositores? expositor = db.Expositores.FirstOrDefault(e => e.DNI == request.dni && e.habilitado);
                 if (expositor != null) 
                 {
                     TipoIngreso? tipoIngreso = db.TipoIngreso.FirstOrDefault(t => t.id == expositor.id_tipoIngreso);
                     if (tipoIngreso != null) 
-                    { 
+                    {
+                        Ingresos? ingresoAnterior = db.Ingresos.OrderByDescending(i => i.fecha).FirstOrDefault(i => i.id_expositor == expositor.id && i.id_evento == expositor.id_evento);
                         if (tipoIngreso.Tipo == "UNICO")
                         {
-                            // Validar que ya no tenga un ingreso registrado a ese evento
-                            Ingresos? ingresoAnterior = db.Ingresos.FirstOrDefault(i => i.id_expositor == expositor.id && i.id_evento == expositor.id_evento);
+                            // Validar que ya no tenga un ingreso registrado a ese evento                            
                             if (ingresoAnterior != null)
                             {
                                 return BadRequest("Ingreso unico ya utilizado");
@@ -59,9 +59,14 @@ namespace ReactPOC.Controllers
                             {
                                 // Registrar el ingreso y devolver los datos
                                 Ingresos nuevoIngreso = new Ingresos();
-                                nuevoIngreso.fecha = DateTime.Now;
+                                // Obtener la zona horaria de Buenos Aires (UTC-3)
+                                TimeZoneInfo buenosAiresTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Argentina Standard Time");
+                                // Obtener la hora actual en Buenos Aires
+                                DateTime currentTimeInBuenosAires = TimeZoneInfo.ConvertTime(DateTime.UtcNow, buenosAiresTimeZone);
+                                nuevoIngreso.fecha = currentTimeInBuenosAires;
                                 nuevoIngreso.id_evento = expositor.id_evento;
                                 nuevoIngreso.id_expositor = expositor.id;
+                                nuevoIngreso.valido = true;
                                 db.Ingresos.Add(nuevoIngreso);
                                 db.SaveChanges();
                                 var ingresoResponse = new IngresoResponse
@@ -69,7 +74,8 @@ namespace ReactPOC.Controllers
                                     Message = "Ingreso Ok",
                                     Expositor = expositor.Apellido + ", " + expositor.Nombre,
                                     Empresa = expositor.Empresa,
-                                    Evento = ""
+                                    Evento = "",
+                                    UltimoIngreso = nuevoIngreso.fecha.ToString("dd/MM/yyyy HH:mm:ss"),
                                 };
                                 return Ok(ingresoResponse);
                             }
@@ -78,9 +84,14 @@ namespace ReactPOC.Controllers
                         {
                             // Registrar el ingreso y devolver los datos
                             Ingresos nuevoIngreso = new Ingresos();
-                            nuevoIngreso.fecha = DateTime.Now;
+                            // Obtener la zona horaria de Buenos Aires (UTC-3)
+                            TimeZoneInfo buenosAiresTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Argentina Standard Time");
+                            // Obtener la hora actual en Buenos Aires
+                            DateTime currentTimeInBuenosAires = TimeZoneInfo.ConvertTime(DateTime.UtcNow, buenosAiresTimeZone);
+                            nuevoIngreso.fecha = currentTimeInBuenosAires;
                             nuevoIngreso.id_evento = expositor.id_evento;
                             nuevoIngreso.id_expositor = expositor.id;
+                            nuevoIngreso.valido = true;
                             db.Ingresos.Add(nuevoIngreso);
                             db.SaveChanges();
                             var ingresoResponse = new IngresoResponse
@@ -88,7 +99,8 @@ namespace ReactPOC.Controllers
                                 Message = "Ingreso Ok",
                                 Expositor = expositor.Apellido + ", " + expositor.Nombre,
                                 Empresa = expositor.Empresa,
-                                Evento = ""
+                                Evento = "",
+                                UltimoIngreso = ingresoAnterior.fecha.ToString("dd/MM/yyyy HH:mm:ss"),
                             };
                             return Ok(ingresoResponse);
                         }
@@ -100,7 +112,7 @@ namespace ReactPOC.Controllers
                 }
                 else
                 {
-                    return BadRequest("Expositor no existente");
+                    return BadRequest("Expositor no existente o no habilitado");
                 }
             }
             else

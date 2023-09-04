@@ -9,22 +9,45 @@ import { Alert } from '@mui/material';
 import { AuthProvider, useAuth } from './components/AuthProvider';
 
 function PrivateRoute({ element, requiresRole }) {
+    //const { isAuthenticated, userRole } = useAuth();
+    //const navigate = useNavigate();
+
+    ////if (!isAuthenticated) {
+    ////    navigate('/loginuser');
+    ////}
+
+    //if (requiresRole && userRole !== requiresRole) {
+    //    return (
+    //        <Alert severity="error" onClose={() => navigate('/')}>
+    //            Acceso denegado. No estas autorizado para ver esta pagina.
+    //        </Alert>
+    //    );
+    //}
+
+    //return element;
+
     const { isAuthenticated, userRole } = useAuth();
     const navigate = useNavigate();
-
-    //if (!isAuthenticated) {
-    //    navigate('/loginuser');
-    //}
 
     if (requiresRole && userRole !== requiresRole) {
         return (
             <Alert severity="error" onClose={() => navigate('/')}>
-                Acceso denegado. No estas autorizado para ver esta pagina.
+                Acceso denegado. No estás autorizado para ver esta página.
+            </Alert>
+        );
+    }
+
+    // Verifica si la ruta requiere autenticación
+    if (element.props.requiresAuth && !isAuthenticated) {
+        return (
+            <Alert severity="error" onClose={() => navigate('/loginuser')}>
+                Acceso denegado. Inicia sesión para ver esta página.
             </Alert>
         );
     }
 
     return element;
+
 }
 
 function App() {
@@ -40,8 +63,12 @@ function App() {
         if (isInitialLoad) {
             setIsInitialLoad(false);
         } else if (!isAuthenticated) {
-            // Si no está autenticado, redirige al componente de login
-            navigate('/loginuser');
+            //// Si no está autenticado, redirige al componente de login
+            //navigate('/loginuser');
+
+            if (!window.location.pathname.startsWith('/ExpositoresRegistro') && !isAuthenticated) {
+                navigate('/loginuser');
+            }
         }
     }, [isInitialLoad, isAuthenticated, navigate]);
 

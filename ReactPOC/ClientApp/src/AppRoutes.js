@@ -11,6 +11,7 @@ import ExpositoresList from "./components/ExpositoresList";
 import IngresosList from "./components/IngresosList";
 import EventosCard from "./components/EventosCard";
 import Breadcrumb from "./components/Breadcrumb";
+import ExpositorRegistro from "./components/ExpositoresRegistro";
 
 
 const AppRoutes = [
@@ -19,6 +20,12 @@ const AppRoutes = [
         element: <Home />,
         requiresAuth: false, // No requiere autenticación
         requiresRole: 'Administrador',
+      },
+      {
+        path: '/expositoresregistro',
+        element: <ExpositorRegistro />,
+        requiresAuth: false, // No requiere autenticación
+        requiresRole: '',
       },
       {
         path: '/counter',

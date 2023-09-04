@@ -16,6 +16,10 @@ public partial class Usuarios
     [Required]
     [StringLength(80)]
     [Unicode(false)]
+    public string Username { get; set; }
+    [Required]
+    [StringLength(80)]
+    [Unicode(false)]
     public string Email { get; set; }
 
     [Required]

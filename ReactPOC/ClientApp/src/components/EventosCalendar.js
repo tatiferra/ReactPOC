@@ -42,6 +42,7 @@ export class EventosCalendar extends React.Component {
                     title: evento.nombreEvento,
                     start: new Date(evento.fechaDesde),
                     end: new Date(evento.fechaHasta),
+                    
                     allDay: true,
                     className: evento.habilitado ? 'evento-habilitado' : 'evento-deshabilitado',
                     ...evento, // Agrega todas las propiedades del evento al objeto del calendario
@@ -84,7 +85,7 @@ export class EventosCalendar extends React.Component {
                     events={events}
                     startAccessor="start"
                     endAccessor="end"
-                    views={['month', 'week', 'day']}
+                    views={['month', 'week']}
                     selectable
                     onSelectEvent={this.handleSelectEvent}
                     onSelectSlot={(slotInfo) => console.log(slotInfo)}
@@ -108,6 +109,7 @@ export class EventosCalendar extends React.Component {
                             <>
                                 <Typography variant="subtitle1">Fecha de inicio: {selectedEvent.start.toLocaleString()}</Typography>
                                 <Typography variant="subtitle1">Fecha de fin: {selectedEvent.end.toLocaleString()}</Typography>
+                                <Typography variant="subtitle1">Organizador: {selectedEvent.organizador}</Typography>
                                 {/* Agrega aquí más detalles del evento según tus necesidades */}
                             </>
                         )}

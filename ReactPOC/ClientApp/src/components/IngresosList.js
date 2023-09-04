@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
 import { Alert, Typography, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Stack, Tooltip, Modal } from '@mui/material';
 import { FormControlLabel, Checkbox, Snackbar } from '@mui/material';
@@ -106,54 +107,6 @@ class IngresosList extends Component {
             });
     };
 
-    //handleEdit = (selectedRow) => {
-    //    console.log('Editar evento:', selectedRow);
-    //    // Lógica para editar el usuario con el ID proporcionado
-    //    const formattedFechaDesde = this.formatDate(selectedRow.fechaDesde);
-    //    const formattedFechaHasta = this.formatDate(selectedRow.fechaHasta);
-    //    const isEditing = true; // Comprueba si hay un evento seleccionado
-    //    this.setState({
-    //        selectedRow: selectedRow,
-    //        openModal: true,
-    //        nombreEvento: selectedRow.nombreEvento,
-    //        fechaDesde: formattedFechaDesde,
-    //        fechaHasta: formattedFechaHasta,
-    //        organizador: selectedRow.organizador,
-    //        habilitado: selectedRow.habilitado,
-    //        tipoIngreso: selectedRow.id_tipoIngreso,
-    //        isEditing: isEditing,
-    //    });
-    //    //alert('Editar el evento ' + this.state.fechaDesde.toString());
-
- 
-    //};
-
-    //handleDisable = (selectedRow) => {
-    //    console.log('Deshabilitar evento:', selectedRow);
-    //    // Lógica para editar el usuario con el ID proporcionado
-    //    const formattedFechaDesde = this.formatDate(selectedRow.fechaDesde);
-    //    const formattedFechaHasta = this.formatDate(selectedRow.fechaHasta);
-    //    this.setState({
-    //        selectedRow: selectedRow,
-    //        nombreEvento: selectedRow.nombreEvento,
-    //        fechaDesde: formattedFechaDesde,
-    //        fechaHasta: formattedFechaHasta,
-    //        organizador: selectedRow.organizador,
-    //        habilitado: selectedRow.habilitado,
-    //        tipoIngreso: selectedRow.id_tipoIngreso,
-    //    });
-    //    this.handleConfirmDisable();
-    //    //this.handleDisableEvent();
-
-
-    //};
-
-    //handleDelete = (userId) => {
-    //    console.log('Eliminar evento:', userId);
-    //    // Lógica para eliminar el usuario con el ID proporcionado
-    //    alert('Eliminar el evento ' + userId);
-    //};
-
     
 
     handleOpenModal = () => {
@@ -169,12 +122,18 @@ class IngresosList extends Component {
 
     handleCloseModal = () => {
         const { selectedEvent } = this.state;
-        if (selectedEvent) {
-            this.setState({
-                openModal: false,
-                error: '',
-            });
-        } 
+        // Verificar si no hay evento seleccionado
+        if (!selectedEvent) {
+            // Realizar la redirección a la página principal (Home)
+            window.history.back();
+            return; // Salir de la función para evitar ejecutar el resto del código
+        }
+
+        // Cerrar el diálogo modal
+        this.setState({
+            openModal: false,
+            error: '',
+        });
     };
 
     handleLoadEvent = () => {
@@ -258,126 +217,7 @@ class IngresosList extends Component {
         saveAs(blob, 'reporte.csv');
     };
 
-    //handleAddEvent = () => {
-    //    const { nombreEvento, fechaDesde, fechaHasta, organizador, habilitado, tipoIngreso} = this.state;
-
-    //    // Validar campos obligatorios
-    //    if (!nombreEvento || !fechaDesde || !fechaHasta || !organizador || !tipoIngreso) {
-    //        this.setState({ error: 'Por favor, completa todos los campos obligatorios' });
-    //        return;
-    //    }
-
-    //    // Validar que fechaHasta sea mayor o igual a fechaDesde
-    //    if (new Date(fechaHasta) < new Date(fechaDesde)) {
-    //        this.setState({ error: 'La fecha de fin debe ser mayor o igual a la fecha de inicio' });
-    //        return;
-    //    }
-
-    //    // Resto de la lógica para agregar el evento
-    //    axios
-    //        .post('eventos/AgregarEvento', {
-    //            nombreEvento: nombreEvento,
-    //            fechaDesde: fechaDesde,
-    //            fechaHasta: fechaHasta,
-    //            organizador: organizador,
-    //            habilitado: habilitado,
-    //            id_tipoIngreso: tipoIngreso,
-    //        })
-    //        .then((response) => {
-    //            // Procesa la respuesta si es necesario
-    //            console.log('Evento agregado con éxito:', response.data);
-    //            // Volver a obtener los eventos activos para actualizar la grilla
-    //            this.ObtenerEventosActivos();
-    //            this.handleShowSnackbar(); // Mostrar el Snackbar
-    //            // Cerrar el diálogo modal y limpiar los campos
-    //            this.handleCloseModal();
-    //        })
-    //        .catch((error) => {
-    //            // Maneja el error si ocurre
-    //            console.error('Error al agregar el evento:', error);
-    //            // Cerrar el diálogo modal y limpiar los campos
-    //            this.handleCloseModal();
-    //        });
-
-        
-    //};
-
-    //handleEditEvent = () => {
-    //    const { nombreEvento, fechaDesde, fechaHasta, organizador, habilitado, tipoIngreso, selectedRow } = this.state;
-
-    //    // Validar campos obligatorios
-    //    if (!nombreEvento || !fechaDesde || !fechaHasta || !organizador || !tipoIngreso) {
-    //        this.setState({ error: 'Por favor, completa todos los campos obligatorios' });
-    //        return;
-    //    }
-
-    //    // Validar que fechaHasta sea mayor o igual a fechaDesde
-    //    if (new Date(fechaHasta) < new Date(fechaDesde)) {
-    //        this.setState({ error: 'La fecha de fin debe ser mayor o igual a la fecha de inicio' });
-    //        return;
-    //    }
-
-    //    // Resto de la lógica para agregar el evento
-    //    axios
-    //        .post('eventos/EditarEvento', {
-    //            id: selectedRow.id,
-    //            nombreEvento: nombreEvento,
-    //            fechaDesde: fechaDesde,
-    //            fechaHasta: fechaHasta,
-    //            organizador: organizador,
-    //            habilitado: habilitado,
-    //            id_tipoIngreso: tipoIngreso,
-    //        })
-    //        .then((response) => {
-    //            // Procesa la respuesta si es necesario
-    //            console.log('Evento agregado con éxito:', response.data);
-    //            // Volver a obtener los eventos activos para actualizar la grilla
-    //            this.ObtenerEventosActivos();
-    //            this.handleShowSnackbar(); // Mostrar el Snackbar
-    //            // Cerrar el diálogo modal y limpiar los campos
-    //            this.handleCloseModal();
-    //        })
-    //        .catch((error) => {
-    //            // Maneja el error si ocurre
-    //            console.error('Error al agregar el evento:', error);
-    //            // Cerrar el diálogo modal y limpiar los campos
-    //            this.handleCloseModal();
-    //        });
-
-
-    //};
-
-    //handleDisableEvent = () => {
-        
-    //    const { nombreEvento, fechaDesde, fechaHasta, organizador, habilitado, tipoIngreso, selectedRow } = this.state;
-
-    //    // Resto de la lógica para agregar el evento
-    //    axios
-    //        .post('eventos/CambiarEstadoEvento', {
-    //            id: selectedRow.id,
-    //            nombreEvento: nombreEvento,
-    //            fechaDesde: fechaDesde,
-    //            fechaHasta: fechaHasta,
-    //            organizador: organizador,
-    //            habilitado: habilitado ? false : true,
-    //            id_tipoIngreso: tipoIngreso,
-    //        })
-    //        .then((response) => {
-    //            // Procesa la respuesta si es necesario
-    //            console.log('Evento cambio estado con éxito:', response.data);
-    //            // Volver a obtener los eventos activos para actualizar la grilla
-    //            this.ObtenerEventosActivos();
-    //            this.handleShowSnackbar(); // Mostrar el Snackbar
-    //            // Cerrar el diálogo modal y limpiar los campos
-    //            this.setState({ confirmDisable: false });
-    //        })
-    //        .catch((error) => {
-    //            // Maneja el error si ocurre
-    //            console.error('Error al cambiar estado el evento:', error);
-    //            // Cerrar el diálogo modal y limpiar los campos
-    //            this.setState({ confirmDisable: false });
-    //        });
-    //};
+    
 
     validarFechas = () => {
         const { fechaDesde, fechaHasta } = this.state;
@@ -467,16 +307,16 @@ class IngresosList extends Component {
                     <Button size="small" onClick={this.exportToCSV}>
                         Exportar a CSV
                     </Button>
-                    <Button size="small" onClick={this.handleGeneratePDF}>
-                        Generar Reporte PDF
-                    </Button>
+                    {/*<Button size="small" onClick={this.handleGeneratePDF}>*/}
+                    {/*    Generar Reporte PDF*/}
+                    {/*</Button>*/}
                     {/* Agrega el PDFDownloadLink */}
-                    <PDFDownloadLink
-                        document={this.state.pdfContent}
-                        fileName="reporte.pdf"
-                    >
-                        {({ loading }) => (loading ? 'Generando PDF...' : 'Descargar Reporte')}
-                    </PDFDownloadLink>
+                    {/*<PDFDownloadLink*/}
+                    {/*    document={this.state.pdfContent}*/}
+                    {/*    fileName="reporte.pdf"*/}
+                    {/*>*/}
+                    {/*    {({ loading }) => (loading ? 'Generando PDF...' : 'Descargar Reporte')}*/}
+                    {/*</PDFDownloadLink>*/}
                 </Stack>
 
                 {/* Agrega el diálogo modal para seleccionar el evento */}

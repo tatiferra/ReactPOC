@@ -45,12 +45,31 @@ namespace ReactPOC.Controllers
             return listaEventosActivos;
         }
 
+        [HttpGet]
+        public IEnumerable<Eventos> ObtenerEventosHabilitados()
+        {
+            List<Eventos> listaEventosActivos = db.Eventos
+                .Include(e => e.Expositores)
+                .Where(e => e.habilitado)
+                .OrderByDescending(e => e.habilitado) // Ordenar por eventos habilitados en orden descendente (true primero, false después)
+                .ThenByDescending(e => e.FechaDesde) // Ordenar por fecha desde en orden descendente
+                .ToList();
+
+            foreach (var evento in listaEventosActivos)
+            {
+                evento.CantidadExpositores = evento.Expositores.Count();
+                evento.Expositores = null;
+            }
+
+            return listaEventosActivos;
+        }
+
         [HttpPost]
         public IActionResult AgregarEvento(Eventos evento) 
         {
             if (ModelState.IsValid)
             {
-                
+                evento.FechaHasta = evento.FechaHasta.AddDays(1);   
                 db.Eventos.Add(evento);
                 db.SaveChanges();
                 return Ok("Evento Agregado con Éxito");
@@ -68,6 +87,23 @@ namespace ReactPOC.Controllers
                 return Ok("Evento Modificado con Éxito");
             }
             else { return BadRequest("Error al editar Evento"); }
+        }
+
+        [HttpPost]
+        public IActionResult EliminarEvento(Eventos evento)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    db.Eventos.Remove(evento);
+                    db.SaveChanges();
+                    return Ok("Evento Modificado con Éxito");
+                } catch (Exception ex) { 
+                    return BadRequest("No se puede eliminar un evento con expositores y registros asociados");
+                }
+            }
+            else { return BadRequest("Error al eliminar Evento"); }
         }
 
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ReactPOC.Helpers;
 using ReactPOC.Models;
 using System.Drawing.Text;
 
@@ -52,10 +53,17 @@ namespace ReactPOC.Controllers
         {
             if (ModelState.IsValid)
             {
-
-                db.Expositores.Add(expositor);
-                db.SaveChanges();
-                return Ok("Expositor Agregado con Éxito");
+                Expositores? expoExistente = db.Expositores.FirstOrDefault(e => e.DNI == expositor.DNI);
+                if (expoExistente == null)
+                {
+                    db.Expositores.Add(expositor);
+                    db.SaveChanges();
+                    return Ok("Expositor Agregado con Éxito");
+                }
+                else 
+                {
+                    return BadRequest("Ya existe un Expositor con ese DNI");
+                }
             }
             else { return BadRequest("Error al agregar el nuevo Expositor"); }
         }
@@ -67,9 +75,34 @@ namespace ReactPOC.Controllers
             {
                 db.Entry(expositor).State = EntityState.Modified;
                 db.SaveChanges();
-                return Ok("Exposiotr modifico estado con Éxito");
+                if (expositor.habilitado)
+                {
+                    bool mailEnviado = EnviarEmailExpositor(expositor.id);
+                    if (mailEnviado)
+                    {
+                        return Ok("Expositor modifico estado con Éxito. Mail Enviado");
+                    }
+                    else 
+                    {
+                        return Ok("Expositor modifico estado con Éxito. Mail no Enviado");
+                    }
+                }               
+                return Ok("Expositor modifico estado con Éxito");
             }
             else { return BadRequest("Error al modificar estado Expositor"); }
+        }
+
+        private bool EnviarEmailExpositor(int expositorId)
+        {
+            Expositores? expositor = db.Expositores.Include(p => p.id_eventoNavigation).Include(p => p.id_tipoIngresoNavigation).FirstOrDefault(e => e.id == expositorId);
+            if (expositor == null)
+            {
+                return false;
+            }
+            else 
+            {
+                return EmailHelper.EnviarEmail(expositor);
+            }
         }
 
     }

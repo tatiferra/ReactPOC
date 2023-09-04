@@ -68,6 +68,8 @@ function NavMenu() {
                     >
                         <MenuIcon />
                     </IconButton>
+                    {/* Agregar el logo en forma de Avatar */}
+                    <Avatar alt="Logo" src="/images/logoruralavatar.png" sx={{ width: 40, height: 40, marginRight: 1 }}/>
                     <Typography variant="h6" noWrap component="div">
                         GESTOR DE EVENTOS
                     </Typography>
@@ -79,7 +81,7 @@ function NavMenu() {
                                     <PersonIcon />
                                 </Avatar>
                                 <Typography variant="body1" sx={{ marginLeft: 1 }}>
-                                    Hola, {userData.email}!
+                                    Hola, {userData.username}!
                                 </Typography>
                             </>
                         ) : (
@@ -181,7 +183,7 @@ function NavMenu() {
                     <Button onClick={handleLogoutCancel} color="primary">
                         Cancelar
                     </Button>
-                    <Button onClick={handleLogoutConfirm} color="error" autoFocus>
+                    <Button onClick={handleLogoutConfirm} color="primary" variant="contained" autoFocus>
                         Cerrar sesion
                     </Button>
                 </DialogActions>

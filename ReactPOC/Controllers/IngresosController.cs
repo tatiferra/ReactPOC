@@ -100,7 +100,7 @@ namespace ReactPOC.Controllers
                                 Expositor = expositor.Apellido + ", " + expositor.Nombre,
                                 Empresa = expositor.Empresa,
                                 Evento = "",
-                                UltimoIngreso = ingresoAnterior.fecha.ToString("dd/MM/yyyy HH:mm:ss"),
+                                UltimoIngreso = nuevoIngreso.fecha.ToString("dd/MM/yyyy HH:mm:ss"),
                             };
                             return Ok(ingresoResponse);
                         }

@@ -30,8 +30,10 @@ public partial class WebRuralContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //Desarrollo
         //=> optionsBuilder.UseSqlServer("Data Source=.\\sqlexpress;Initial Catalog=WebRural;Integrated Security=True;persist security info=True;user id=sa;password=Golf2027;MultipleActiveResultSets=True;TrustServerCertificate=True");
+        //Test
+        //=> optionsBuilder.UseSqlServer("Data Source=SQL5054.site4now.net;Initial Catalog=db_a9d070_ssr;User Id=db_a9d070_ssr_admin;Password=Golf$3013");
         //Produccion
-        => optionsBuilder.UseSqlServer("Data Source=SQL5054.site4now.net;Initial Catalog=db_a9d070_ssr;User Id=db_a9d070_ssr_admin;Password=Golf$3013");
+        => optionsBuilder.UseSqlServer("Data Source=SQL8004.site4now.net;Initial Catalog=db_a9e7d1_ssr;User Id=db_a9e7d1_ssr_admin;Password=Golf$3013");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
